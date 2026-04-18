@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>F1M24 Mod Manager</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-f1">F1</span>
+        <div>
+          <div class="logo-title">Mod Manager</div>
+          <div class="logo-sub">THEFIRENEXUS PACK</div>
+        </div>
+      </div>
+
+      <div class="nav-section">HOME</div>
+      <button class="nav-btn active" data-page="home">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1.5 6.5L7 2l5.5 4.5V12.5a1 1 0 0 1-1 1H9V9H5v3.5H2.5a1 1 0 0 1-1-1V6.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Home
+      </button>
+
+      <div class="nav-section">LIBRARY</div>
+      <button class="nav-btn" data-page="pak" title="PAK mods replace or add game assets — liveries, helmets, sounds, databases">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 3V2a2 2 0 0 1 4 0v1" stroke="currentColor" stroke-width="1.2"/></svg>
+        PAK Mods
+      </button>
+      <button class="nav-btn" data-page="lua" title="Lua mods run via UE4SS and can change game behaviour — DRS control, race logic, UI tweaks">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 4l3 3-3 3M7 10h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        UE4SS / Lua
+      </button>
+
+      <div class="nav-section">DISCOVER</div>
+      <button class="nav-btn" data-page="browse">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Browse Overtake
+      </button>
+
+      <div class="nav-section">SETTINGS</div>
+      <button class="nav-btn" data-page="settings">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.9 2.9l1.1 1.1M10 10l1.1 1.1M2.9 11.1L4 10M10 4l1.1-1.1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        Settings
+      </button>
+
+      <div class="sidebar-launch-wrap">
+        <button class="btn-sidebar-launch" id="launch-game-btn" onclick="App.launchGame()" title="Launch F1 Manager 2024">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <polygon points="4,2 14,8 4,14" fill="currentColor"/>
+          </svg>
+          Launch Game
+        </button>
+      </div>
+      <div id="sidebar-dl-wrap" style="display:none;padding:4px 14px 6px">
+        <div id="sidebar-dl-label" style="font-size:10px;color:var(--hint);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Downloading…</div>
+        <div style="background:var(--bg3);border-radius:3px;height:4px;overflow:hidden">
+          <div id="sidebar-dl-bar" style="height:100%;width:0%;background:var(--red);border-radius:3px;transition:width 0.3s"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div id="dir-status" class="dir-status-badge warn">No game dir set</div>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main id="content">
+
+      <!-- HOME page -->
+      <div class="page active" id="page-home">
+        <div class="page-header">
+          <div>
+            <h1>Welcome</h1>
+            <p class="page-sub">F1 Manager 2024 Mod Manager by THEFIRENEXUS</p>
+          </div>
+        </div>
+        <div class="home-grid">
+          <!-- Featured mods carousel -->
+          <div class="home-section">
+            <div class="home-section-title">Featured Mods</div>
+            <div class="home-carousel">
+              <button class="carousel-arrow carousel-arrow--left" onclick="Home.prevSlide()">&#8249;</button>
+              <div id="home-featured" class="home-card-featured">
+                <div class="loading-row"><div class="spinner"></div><span>Loading...</span></div>
+              </div>
+              <button class="carousel-arrow carousel-arrow--right" onclick="Home.nextSlide()">&#8250;</button>
+              <div class="carousel-dots" id="carousel-dots"></div>
+            </div>
+          </div>
+          <!-- ModVengers Team -->
+          <div class="home-section">
+            <div class="home-section-title">ModVengers Team</div>
+            <div id="home-team" class="home-team-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAK page -->
+      <div class="page" id="page-pak">
+        <div class="page-header">
+          <div>
+            <h1>PAK Mods</h1>
+            <p class="page-sub" id="pak-path-sub">Game directory not set</p>
+          </div>
+          <button class="btn-icon" onclick="App.refresh()" title="Refresh">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M13 7.5A5.5 5.5 0 1 1 7.5 2c1.8 0 3.4.87 4.4 2.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M10.5 4.5H12V3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-title">Downloaded <span class="panel-count" id="repo-pak-count"></span></span>
+              <span class="panel-hint">Mods saved to your repository folder</span>
+            </div>
+            <div class="mod-list" id="repo-pak-list"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-title">Installed <span class="panel-count" id="installed-pak-count"></span></span>
+              <span class="panel-hint" id="pak-dir-hint">—</span>
+            </div>
+            <div class="mod-list" id="installed-pak-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LUA page -->
+      <div class="page" id="page-lua">
+        <div class="page-header">
+          <div>
+            <h1>UE4SS / Lua Mods</h1>
+            <p class="page-sub" id="lua-path-sub">Game directory not set</p>
+          </div>
+          <button class="btn-icon" onclick="App.refresh()" title="Refresh">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M13 7.5A5.5 5.5 0 1 1 7.5 2c1.8 0 3.4.87 4.4 2.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M10.5 4.5H12V3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-title">Downloaded <span class="panel-count" id="repo-lua-count"></span></span>
+              <span class="panel-hint">Mods saved to your repository folder</span>
+            </div>
+            <div class="mod-list" id="repo-lua-list"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-title">Installed <span class="panel-count" id="installed-lua-count"></span></span>
+              <span class="panel-hint" id="lua-dir-hint">—</span>
+            </div>
+            <div class="mod-list" id="installed-lua-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BROWSE page -->
+      <div class="page" id="page-browse">
+        <div class="page-header">
+          <div>
+            <h1>Browse Overtake.gg</h1>
+            <p class="page-sub" id="browse-page-sub">F1 Manager 2024 mod directory</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div id="cache-status" class="cache-status"></div>
+            <button class="btn-outline" onclick="window.api.openExternal('https://www.overtake.gg/downloads/categories/f1-manager-2024.272/')">Open in browser ↗</button>
+            <button class="btn-primary" id="scrape-btn" onclick="Browse.loadCurrentPage()">Load mods</button>
+          </div>
+        </div>
+
+        <div class="browse-controls">
+          <div class="browse-search-row">
+            <input type="text" id="browse-search" class="search-input" placeholder="Search mods by name..." onkeydown="if(event.key==='Enter')Browse.searchByName()" oninput="Browse.onSearchInput()" />
+            <button class="btn-primary" onclick="Browse.searchByName()">Search</button>
+            <button class="btn-ghost" id="browse-search-clear" onclick="Browse.clearSearch()" style="display:none">✕ Clear</button>
+          </div>
+          <div class="chips" id="browse-chips">
+            <button class="chip active" data-filter="all" onclick="Browse.setFilter('all',this)">All</button>
+            <button class="chip" data-filter="pak" onclick="Browse.setFilter('pak',this)">PAK</button>
+            <button class="chip" data-filter="lua" onclick="Browse.setFilter('lua',this)">Lua / UE4SS</button>
+          </div>
+          <div class="browse-pagination" id="browse-pagination" style="display:none;">
+            <button class="btn-icon" id="btn-prev-page" onclick="Browse.prevPage()" title="Previous page">‹</button>
+            <div class="page-jump">
+              <span style="font-size:11px;color:var(--muted)">Page</span>
+              <input type="number" id="page-input" min="1" value="1" class="page-num-input" onchange="Browse.jumpToPage(this.value)" />
+              <span id="page-total-label" style="font-size:11px;color:var(--muted)">of ?</span>
+            </div>
+            <button class="btn-icon" id="btn-next-page" onclick="Browse.nextPage()" title="Next page">›</button>
+          </div>
+        </div>
+
+        <div id="browse-list" class="browse-list">
+          <div class="empty-state">
+            <div class="empty-icon">◎</div>
+            <div>Click <strong>Load mods</strong> to browse Overtake.gg</div>
+            <div class="empty-sub">Fetches the current page of mods from Overtake.gg</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS page -->
+      <div class="page" id="page-settings">
+        <div class="page-header">
+          <div>
+            <h1>Settings</h1>
+            <p class="page-sub">Configure your game directory and preferences</p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-label">Game directory</div>
+          <div class="settings-hint">The folder containing F1Manager2024.exe</div>
+          <div class="dir-row">
+            <input type="text" id="game-dir-input" class="dir-input" placeholder="C:\Program Files (x86)\Steam\steamapps\common\F1 Manager 2024" />
+            <button class="btn-outline" onclick="App.browseDir()">Browse</button>
+            <button class="btn-primary" onclick="App.saveDir()">Save</button>
+          </div>
+          <div id="dir-feedback" class="feedback"></div>
+
+          <div class="settings-divider"></div>
+
+          <div class="settings-label">Mod repository location</div>
+          <div class="settings-hint">Where downloaded mods are stored. Default: C:\F1M24 Mod Manager</div>
+          <div class="dir-row">
+            <input type="text" id="repo-dir-input" class="dir-input" placeholder="C:\F1M24 Mod Manager" />
+            <button class="btn-outline" onclick="App.browseRepoDir()">Browse</button>
+            <button class="btn-primary" onclick="App.saveRepoDir()">Save</button>
+          </div>
+          <div id="repo-dir-feedback" class="feedback"></div>
+
+          <div class="settings-divider"></div>
+
+          <div class="settings-label">Derived paths</div>
+          <div class="derived-path">
+            <span class="derived-label">PAK folder</span>
+            <span class="derived-val" id="derived-pak">—</span>
+          </div>
+          <div class="derived-path">
+            <span class="derived-label">UE4SS Mods</span>
+            <span class="derived-val" id="derived-lua">—</span>
+          </div>
+          <div class="derived-path">
+            <span class="derived-label">Repository</span>
+            <span class="derived-val" id="derived-repo">C:\F1M24 Mod Manager</span>
+          </div>
+
+          <div class="settings-divider"></div>
+
+          <div class="settings-label">Overtake.gg account</div>
+          <div class="settings-hint">Log in so the app can download mods on your behalf</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div id="login-status" class="login-status-badge">Not logged in</div>
+            <button class="btn-primary" onclick="App.loginOvertake()" id="login-btn">Log in to Overtake.gg</button>
+            <button class="btn-outline" onclick="App.logoutOvertake()" id="logout-btn" style="display:none">Log out</button>
+          </div>
+          <div id="login-hint" class="feedback" style="color:var(--hint)">A browser window will open — sign in, then close the window to continue.</div>
+
+          <div class="settings-divider"></div>
+
+          <button class="btn-outline" onclick="window.api.openRepoDir()">Open repository folder ↗</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- First-run setup modal -->
+  <div id="setup-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box" style="max-width:480px">
+      <div class="modal-header">
+        <div class="modal-title">Welcome to F1M24 Mod Manager</div>
+      </div>
+      <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+        <p style="font-size:13px;color:var(--muted);margin:0">To get started, set your F1 Manager 2024 game directory. This is the folder that contains <strong style="color:var(--text)">F1Manager24.exe</strong>.</p>
+        <p style="font-size:11px;color:var(--hint);margin:0">Usually found at:<br><code style="font-size:10px">C:\Program Files (x86)\Steam\steamapps\common\F1 Manager 2024</code></p>
+        <div class="dir-row">
+          <input type="text" id="setup-dir-input" class="dir-input" placeholder="C:\Program Files (x86)\Steam\steamapps\common\F1 Manager 2024" />
+          <button class="btn-outline" onclick="Setup.browse()">Browse</button>
+        </div>
+        <div id="setup-feedback" class="feedback"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+          <button class="btn-outline" onclick="Setup.skip()">Skip for now</button>
+          <button class="btn-primary" onclick="Setup.save()">Continue →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Install modal -->
+  <div id="install-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)InstallModal.close()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-mod-name">Install mod</div>
+        <button class="btn-ghost" onclick="InstallModal.close()">✕</button>
+      </div>
+      <div class="modal-actions" id="modal-actions">
+        <button class="btn-primary" id="modal-btn-install-all" onclick="InstallModal.installAll()">Install all files</button>
+        <button class="btn-outline" id="modal-btn-install-sel" onclick="InstallModal.installSelected()">Install selected</button>
+        <label class="modal-check-all" id="modal-check-all-wrap"><input type="checkbox" id="modal-check-all" onchange="InstallModal.toggleAll(this.checked)" /> Select all</label>
+      </div>
+      <div id="modal-install-progress" style="display:none;padding:12px 16px 4px">
+        <div id="modal-progress-label" style="font-size:11px;color:var(--muted);margin-bottom:6px">Installing…</div>
+        <div style="background:var(--bg3);border-radius:4px;height:6px;overflow:hidden;">
+          <div id="modal-progress-bar" style="height:100%;width:0%;background:var(--red);border-radius:4px;transition:width 0.15s;"></div>
+        </div>
+        <div id="modal-progress-file" style="font-size:10px;color:var(--hint);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+      </div>
+      <div id="modal-file-list" class="modal-file-list"></div>
+    </div>
+  </div>
+
+
+  <!-- Mod updates modal -->
+  <div id="updates-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box" style="max-width:500px">
+      <div class="modal-header">
+        <div class="modal-title">🔔 Mod Updates Available</div>
+        <button class="btn-ghost" onclick="UpdatesModal.hide()">✕</button>
+      </div>
+      <div id="updates-list" style="max-height:340px;overflow-y:auto;padding:8px 16px"></div>
+      <div style="padding:12px 16px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border)">
+        <button class="btn-outline" onclick="UpdatesModal.hide()">Dismiss</button>
+        <button class="btn-primary" id="update-all-btn" onclick="UpdatesModal.updateAll()">Update All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm delete dialog -->
+  <div id="confirm-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box" style="max-width:360px">
+      <div class="modal-header">
+        <div class="modal-title" id="confirm-message">Are you sure?</div>
+      </div>
+      <div style="padding:12px 16px 4px">
+        <div id="confirm-detail" style="font-size:13px;color:var(--text);font-weight:500;word-break:break-all;margin-bottom:16px"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn-outline" onclick="ConfirmModal.cancel()">Cancel</button>
+          <button class="btn-primary" onclick="ConfirmModal.confirm()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- UE4SS install prompt -->
+  <div id="ue4ss-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box" style="max-width:420px">
+      <div class="modal-header">
+        <div class="modal-title">UE4SS Required</div>
+      </div>
+      <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+        <p style="font-size:13px;color:var(--muted);margin:0">This mod requires <strong style="color:var(--text)">UE4SS</strong> to run. It doesn't look like UE4SS is installed in your game directory.</p>
+        <p style="font-size:12px;color:var(--hint);margin:0">UE4SS is a scripting framework needed for Lua mods. Installing it will add <code>dwmapi.dll</code> and the <code>ue4ss/</code> folder to your game's Win64 directory.</p>
+        <div id="ue4ss-progress-wrap" style="display:none">
+          <div id="ue4ss-progress-status" style="font-size:11px;color:var(--muted);margin-bottom:5px">Installing…</div>
+          <div style="background:var(--bg3);border-radius:4px;height:6px;overflow:hidden">
+            <div id="ue4ss-progress-bar" style="height:100%;width:0%;background:var(--red);border-radius:4px;transition:width 0.2s"></div>
+          </div>
+          <div id="ue4ss-progress-file" style="font-size:10px;color:var(--hint);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+        </div>
+        <div id="ue4ss-modal-btns" style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+          <button class="btn-outline" onclick="UE4SSModal.skip()">Skip — install mod only</button>
+          <button class="btn-primary" onclick="UE4SSModal.installBoth()">Install UE4SS + mod</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="status-bar" class="status-bar">
+    <span id="status-game-dir" class="status-item">No game directory set</span>
+    <span class="status-sep">·</span>
+    <span id="status-pak-count" class="status-item">0 PAK installed</span>
+    <span class="status-sep">·</span>
+    <span id="status-lua-count" class="status-item">0 Lua installed</span>
+    <span class="status-right">
+      <span id="status-login" class="status-item">Not logged in</span>
+    </span>
+  </div>
+
+  <!-- Drag & drop overlay -->
+  <div id="drop-overlay">
+    <div class="drop-overlay-inner">
+      <div class="drop-icon">📦</div>
+      <div class="drop-label">Drop mod (.zip / .rar) to import</div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
