@@ -1,0 +1,65 @@
+{
+  "name": "f1m24-mod-manager",
+  "version": "1.0.3",
+  "description": "F1 Manager 2024 Mod Manager \u2014 THEFIRENEXUS PACK",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "dev": "electron . --dev"
+  },
+  "build": {
+    "appId": "com.thefirenexus.f1m24modmanager",
+    "productName": "F1M24 Mod Manager",
+    "compression": "maximum",
+    "icon": "build/icon.ico",
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "src/extract-worker.js",
+      "node_modules/adm-zip/**/*",
+      "node_modules/node-unrar-js/**/*",
+      "!**/*.map",
+      "!**/*.md",
+      "!**/*.ts",
+      "!**/.git/**",
+      "!**/test/**",
+      "!**/tests/**",
+      "!**/spec/**",
+      "!**/docs/**",
+      "!**/example/**",
+      "!**/examples/**",
+      "!**/benchmark/**",
+      "!node_modules/.cache/**",
+      "!node_modules/.bin/**"
+    ],
+    "asar": true,
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "deleteAppDataOnUninstall": false
+    }
+  },
+  "devDependencies": {
+    "electron": "41.1.1",
+    "electron-builder": "^26.0.0"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "node-unrar-js": "^2.0.0"
+  }
+}
